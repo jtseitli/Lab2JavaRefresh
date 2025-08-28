@@ -48,19 +48,24 @@
     }
 
     function updateTitle() {
-      // TODO: set the title text to show the count, e.g., "My Items (N)"
-      // Use items.length for N
+      titleEl.textContent = 'My Items ($(items.length))';
     }
 
     function render() {
-      // TODO: clear the list (listEl.innerHTML = "")
-      // TODO: loop over items and create an <li> for each:
-      //   - li.textContent = item.name
-      //   - if item.done is true, add class "done"
-      //   - store item.id on the li using li.dataset.id = item.id
-      //   - (optional) set li.style.background = item.color
-      // TODO: append each li to listEl
-      // TODO: call updateTitle() at the end
+      listEl.innerHTML = "";
+
+      li.textContent = item.name
+      li.dataset.id = item.id //store id to find later
+      if (item.done) li.classList.add("done");
+      li.style.background = item.color; //visuals, contrast for readability
+
+      const c = item.color.replace("#", "");
+      const r = parseInt(c.slice(0,2), 16);
+      const g = parseInt(c.slice(2,4), 16);
+      const b = parseInt(c.slice(4,6), 16);
+
+      listEl.appendChild(li);
+      updateTitle();
     }
 
     // ===== Events =====
@@ -69,23 +74,32 @@
       e.preventDefault();
       const name = nameInput.value.trim();
       if (!name) return;
-      // TODO:
-      // - push a new object into items: { id: nextId++, name, color: randomColor(), done: false }
-      // - clear the input
-      // - call render()
+      items.push({
+        id: nextID++,
+        name,
+        color: randomColor(),
+        done:false
+      });
+      nameInput.value = "";
+      nameInput.focus();
+      render();
     });
 
     // 2) Delete last item on button click
     btnDeleteLast.addEventListener("click", () => {
-      // TODO: remove the last element from items if any, then call render()
+      if (items.length === 0) return; 
+      items.pop();
+      render();
     });
 
     // 3) Toggle "done" by clicking an item (event delegation on the <ul>)
     listEl.addEventListener("click", (e) => {
-      // TODO:
-      // - find the closest <li> (e.target.closest("li"))
-      // - read its data-id, find the matching item in items
-      // - flip item.done (true/false), then call render()
+      const li = e.target.closest("li");
+      if (!li || !listEl.contains(li)) return;
+      const id = parseInt(li.dataset.id, 10);
+      const item = items.find(it => it.id === id);
+      if (!item) return;
+      item.done = !item.done;
     });
 
     // Initial paint
