@@ -48,25 +48,27 @@
     }
 
     function updateTitle() {
-      titleEl.textContent = 'My Items ($(items.length))';
+      titleEl.textContent = `My Items (${items.length})`;
     }
 
     function render() {
       listEl.innerHTML = "";
+      for(const item of items) {
+        const li = document.createElement("li");
+        li.textContent = item.name
+        li.dataset.id = item.id //store id to find later
+        if (item.done) li.classList.add("done");
+        li.style.background = item.color; //visuals, contrast for readability
 
-      li.textContent = item.name
-      li.dataset.id = item.id //store id to find later
-      if (item.done) li.classList.add("done");
-      li.style.background = item.color; //visuals, contrast for readability
+        const c = item.color.replace("#", "");
+        const r = parseInt(c.slice(0,2), 16);
+        const g = parseInt(c.slice(2,4), 16);
+        const b = parseInt(c.slice(4,6), 16);
 
-      const c = item.color.replace("#", "");
-      const r = parseInt(c.slice(0,2), 16);
-      const g = parseInt(c.slice(2,4), 16);
-      const b = parseInt(c.slice(4,6), 16);
-
-      listEl.appendChild(li);
-      updateTitle();
+        listEl.appendChild(li);
     }
+    updateTitle();
+  }
 
     // ===== Events =====
     // 1) Add item on form submit
@@ -75,7 +77,7 @@
       const name = nameInput.value.trim();
       if (!name) return;
       items.push({
-        id: nextID++,
+        id: nextId++,
         name,
         color: randomColor(),
         done:false
@@ -100,6 +102,7 @@
       const item = items.find(it => it.id === id);
       if (!item) return;
       item.done = !item.done;
+      render();
     });
 
     // Initial paint
